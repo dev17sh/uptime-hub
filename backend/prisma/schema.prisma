@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MonitorStatus {
+  UP
+  SUSPECT
+  DOWN
+  RECOVERING
+}
+
+enum CheckErrorType {
+  TIMEOUT
+  DNS
+  CONNECTION
+  TLS
+  HTTP_STATUS
+  BLOCKED
+  UNKNOWN
+}
+
+enum IncidentStatus {
+  OPEN
+  RESOLVED
+}
+
+enum NotificationType {
+  DOWN
+  RECOVERED
+}
+
+enum NotificationChannel {
+  EMAIL
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+model User {
+  id                     String                  @id @default(uuid())
+  name                   String
+  email                  String                  @unique
+  passwordHash           String
+  createdAt              DateTime                @default(now())
+  monitors               Monitor[]
+  notificationPreference NotificationPreference?
+  notifications          Notification[]
+}
+
+model Monitor {
+  id                   String        @id @default(uuid())
+  userId               String
+  user                 User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name                 String
+  url                  String
+  method               String        @default("GET")
+  intervalSeconds      Int           @default(60)
+  timeoutMs            Int           @default(10000)
+  failureThreshold     Int           @default(2)
+  recoveryThreshold    Int           @default(2)
+  isActive             Boolean       @default(true)
+  currentStatus        MonitorStatus @default(UP)
+  consecutiveFailures  Int           @default(0)
+  consecutiveSuccesses Int           @default(0)
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+  checks               CheckResult[]
+  incidents            Incident[]
+
+  @@index([userId])
+}
+
+model CheckResult {
+  id             String          @id @default(uuid())
+  monitorId      String
+  monitor        Monitor         @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+  statusCode     Int?
+  responseTimeMs Float?
+  isUp           Boolean
+  errorType      CheckErrorType?
+  errorMessage   String?
+  checkedAt      DateTime        @default(now())
+
+  @@index([monitorId, checkedAt])
+}
+
+model Incident {
+  id            String         @id @default(uuid())
+  monitorId     String
+  monitor       Monitor        @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+  startedAt     DateTime       @default(now())
+  resolvedAt    DateTime?
+  status        IncidentStatus @default(OPEN)
+  failureReason String?
+  notifications Notification[]
+
+  @@index([monitorId, status])
+}
+
+model NotificationPreference {
+  id              String  @id @default(uuid())
+  userId          String  @unique
+  user            User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emailEnabled    Boolean @default(true)
+  downtimeEnabled Boolean @default(true)
+  recoveryEnabled Boolean @default(true)
+}
+
+model Notification {
+  id         String              @id @default(uuid())
+  incidentId String
+  incident   Incident            @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type       NotificationType
+  channel    NotificationChannel @default(EMAIL)
+  status     NotificationStatus  @default(PENDING)
+  attempts   Int                 @default(0)
+  sentAt     DateTime?
+  error      String?
+
+  @@unique([incidentId, type])
+  @@index([userId])
+}
+
