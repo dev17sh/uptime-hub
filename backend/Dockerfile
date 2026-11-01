@@ -41,3 +41,4 @@ EXPOSE 4000
 
 # Default command: run migrations and launch API server
 CMD ["sh", "-c", "npx prisma migrate deploy && node dist/server.js"]
+
