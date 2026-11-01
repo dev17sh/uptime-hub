@@ -13,6 +13,11 @@ services:
       POSTGRES_DB: uptimehub
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U uptimehub -d uptimehub']
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:7-alpine
@@ -22,8 +27,86 @@ services:
       - '6379:6379'
     volumes:
       - redisdata:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: uptimehub-api
+    restart: unless-stopped
+    ports:
+      - '4000:4000'
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATABASE_URL: postgresql://uptimehub:password@postgres:5432/uptimehub
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: super-secret-production-jwt-key-uptimehub
+      CORS_ORIGIN: http://localhost:3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:4000/health']
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  worker-checks:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: uptimehub-worker-checks
+    restart: unless-stopped
+    command: ["node", "dist/workers/monitor.worker.js"]
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://uptimehub:password@postgres:5432/uptimehub
+      REDIS_URL: redis://redis:6379
+      CHECK_WORKER_CONCURRENCY: 10
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker-notifications:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: uptimehub-worker-notifications
+    restart: unless-stopped
+    command: ["node", "dist/workers/notification.worker.js"]
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://uptimehub:password@postgres:5432/uptimehub
+      REDIS_URL: redis://redis:6379
+      MAIL_FROM: alerts@uptimehub.local
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: uptimehub-frontend
+    restart: unless-stopped
+    ports:
+      - '3000:80'
+    depends_on:
+      api:
+        condition: service_healthy
 
 volumes:
   pgdata:
   redisdata:
-

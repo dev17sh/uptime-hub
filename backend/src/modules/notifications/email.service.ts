@@ -220,3 +220,4 @@ export async function sendEmail(options: {
 
   logger.info({ to: options.to, subject: options.subject }, 'Alert email dispatched successfully');
 }
+

@@ -12,3 +12,4 @@ export async function updateNotificationSettingsApi(
   const { data } = await apiClient.put<ApiResponse<NotificationPreference>>('/settings/notifications', settings);
   return data.data;
 }
+

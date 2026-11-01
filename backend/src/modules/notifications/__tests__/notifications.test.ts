@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest';
 import request from 'supertest';
-import nodemailer from 'nodemailer';
+import nodemailer, { type Transporter } from 'nodemailer';
 import app from '../../../app.js';
 import { prisma } from '../../../db/prisma.js';
 import {
@@ -317,7 +317,7 @@ describe('Notifications Module (Phase 8)', () => {
       const failingTransport = {
         sendMail: vi.fn().mockRejectedValue(new Error('SMTP Connection Refused (ECONNREFUSED)')),
       };
-      setMailTransporter(failingTransport as unknown as nodemailer.Transporter);
+      setMailTransporter(failingTransport as unknown as Transporter);
 
       await expect(
         processNotificationJob({
@@ -345,3 +345,4 @@ describe('Notifications Module (Phase 8)', () => {
     });
   });
 });
+

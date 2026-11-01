@@ -13,3 +13,4 @@ router.get('/notifications', getPreferencesHandler);
 router.put('/notifications', updatePreferencesHandler);
 
 export default router;
+
