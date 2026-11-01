@@ -77,3 +77,4 @@ export default function StatusBadge({ status, isActive = true, size = 'md' }: St
     </span>
   );
 }
+

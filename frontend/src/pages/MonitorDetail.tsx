@@ -397,3 +397,4 @@ export default function MonitorDetail() {
     </div>
   );
 }
+

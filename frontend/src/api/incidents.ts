@@ -13,3 +13,4 @@ export async function getIncidentByIdApi(id: string): Promise<Incident> {
   const { data } = await apiClient.get<ApiResponse<Incident>>(`/incidents/${id}`);
   return data.data;
 }
+

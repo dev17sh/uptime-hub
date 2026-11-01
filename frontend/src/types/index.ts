@@ -98,3 +98,9 @@ export interface UptimeStats {
   failedChecks: number;
   timeSeries: TimeSeriesPoint[];
 }
+
+export interface NotificationPreference {
+  emailEnabled: boolean;
+  downtimeEnabled: boolean;
+  recoveryEnabled: boolean;
+}

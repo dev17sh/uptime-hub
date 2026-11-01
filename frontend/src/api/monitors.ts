@@ -71,3 +71,4 @@ export async function getMonitorUptimeApi(
   });
   return data.data;
 }
+

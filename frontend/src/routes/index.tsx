@@ -5,6 +5,7 @@ import Login from '../pages/Login';
 import Register from '../pages/Register';
 import MonitorDetail from '../pages/MonitorDetail';
 import Incidents from '../pages/Incidents';
+import Settings from '../pages/Settings';
 import NotFound from '../pages/NotFound';
 import ProtectedRoute from './ProtectedRoute';
 
@@ -35,6 +36,10 @@ export const router = createBrowserRouter([
           {
             path: 'incidents',
             element: <Incidents />,
+          },
+          {
+            path: 'settings',
+            element: <Settings />,
           },
         ],
       },

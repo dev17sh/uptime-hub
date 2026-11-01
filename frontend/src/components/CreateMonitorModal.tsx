@@ -195,3 +195,4 @@ export default function CreateMonitorModal({ isOpen, onClose }: CreateMonitorMod
     </div>
   );
 }
+

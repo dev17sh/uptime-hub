@@ -1,6 +1,6 @@
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../features/auth/AuthContext';
-import { Activity, AlertTriangle } from 'lucide-react';
+import { Activity, AlertTriangle, Settings as SettingsIcon } from 'lucide-react';
 
 export default function Layout() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -56,6 +56,17 @@ export default function Layout() {
                   >
                     <AlertTriangle className="w-3.5 h-3.5" />
                     Incidents
+                  </Link>
+                  <Link
+                    to="/settings"
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                      isNavActive('/settings')
+                        ? 'bg-indigo-50 text-indigo-700 font-semibold'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                    }`}
+                  >
+                    <SettingsIcon className="w-3.5 h-3.5" />
+                    Settings
                   </Link>
                 </div>
               )}

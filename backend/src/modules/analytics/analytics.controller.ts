@@ -15,3 +15,4 @@ export async function getUptimeStats(req: Request, res: Response, next: NextFunc
     next(error);
   }
 }
+
