@@ -344,3 +344,4 @@ stateDiagram-v2
 | [`frontend/src/pages/Login.tsx`](file:///wsl.localhost/Ubuntu-22.04/home/user/projects/uptimehub/frontend/src/pages/Login.tsx) | Sign-in page with credential validation and redirection. |
 | [`frontend/src/pages/Register.tsx`](file:///wsl.localhost/Ubuntu-22.04/home/user/projects/uptimehub/frontend/src/pages/Register.tsx) | Registration page for new user account creation. |
 | [`frontend/src/pages/NotFound.tsx`](file:///wsl.localhost/Ubuntu-22.04/home/user/projects/uptimehub/frontend/src/pages/NotFound.tsx) | 404 error page with navigation button back to Home. |
+
